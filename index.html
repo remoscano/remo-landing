@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Remo Scano — Get Found. Inside and Out.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0e0e0d;
+    --parchment: #f5f0e8;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --mist: #8a8578;
+    --deep: #1a1a16;
+    --cream: #faf7f2;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.4s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 28px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 100;
+    mix-blend-mode: normal;
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 400; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--ink);
+    opacity: 0; animation: fadeUp 1s ease 0.2s forwards;
+  }
+  .nav-cta {
+    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--gold); text-decoration: none; font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s;
+    opacity: 0; animation: fadeUp 1s ease 0.4s forwards;
+  }
+  .nav-cta:hover { border-color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    right: -60px; top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(120px, 18vw, 220px);
+    font-weight: 300; color: transparent;
+    -webkit-text-stroke: 1px rgba(201,168,76,0.12);
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: -4px;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 32px; font-weight: 500;
+    opacity: 0; animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .hero-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 300; line-height: 1.0;
+    letter-spacing: -2px;
+    max-width: 800px;
+    opacity: 0; animation: fadeUp 1.2s ease 0.8s forwards;
+  }
+
+  .hero-headline em {
+    font-style: italic; color: var(--gold);
+  }
+
+  .hero-sub {
+    margin-top: 40px;
+    font-size: clamp(15px, 2vw, 18px);
+    line-height: 1.8; color: var(--mist);
+    max-width: 520px; font-weight: 300;
+    opacity: 0; animation: fadeUp 1s ease 1.1s forwards;
+  }
+
+  .hero-cta-group {
+    margin-top: 56px; display: flex; gap: 24px; align-items: center;
+    opacity: 0; animation: fadeUp 1s ease 1.3s forwards;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 18px 44px;
+    background: var(--ink);
+    color: var(--cream);
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    text-decoration: none; font-weight: 500;
+    transition: background 0.3s, transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--gold);
+    transform: translateX(-101%);
+    transition: transform 0.4s ease;
+    z-index: 0;
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .btn-ghost {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--mist); text-decoration: none;
+    border-bottom: 1px solid var(--gold-light);
+    padding-bottom: 3px;
+    transition: color 0.3s;
+  }
+  .btn-ghost:hover { color: var(--ink); }
+
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: fadeUp 1s ease 1.8s forwards;
+  }
+  .hero-scroll span {
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--mist);
+  }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+
+  /* DIVIDER */
+  .section-divider {
+    display: flex; align-items: center; gap: 24px;
+    padding: 0 48px;
+    margin: 80px 0;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--gold-light); opacity: 0.4; }
+  .divider-symbol {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; color: var(--gold); opacity: 0.6;
+  }
+
+  /* SECTIONS */
+  section { padding: 100px 48px; }
+
+  .section-label {
+    font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 48px; display: block;
+  }
+
+  /* PROBLEM */
+  .problem { background: var(--ink); color: var(--parchment); }
+  .problem .section-label { color: var(--gold); }
+
+  .problem-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: start;
+    max-width: 1100px;
+  }
+
+  .problem-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 300; line-height: 1.15;
+    letter-spacing: -1px;
+  }
+  .problem-headline em { font-style: italic; color: var(--gold); }
+
+  .problem-body { padding-top: 16px; }
+  .problem-body p {
+    font-size: 16px; line-height: 1.9;
+    color: rgba(245,240,232,0.65);
+    margin-bottom: 24px;
+  }
+  .problem-body p strong { color: var(--parchment); font-weight: 400; }
+
+  /* TRUTH */
+  .truth { background: var(--cream); }
+  .truth-statement {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 300; line-height: 1.3;
+    letter-spacing: -0.5px;
+    max-width: 800px;
+    border-left: 2px solid var(--gold);
+    padding-left: 40px;
+    margin: 0 auto;
+  }
+  .truth-statement em { font-style: italic; color: var(--gold); }
+
+  /* OFFER */
+  .offer { background: var(--parchment); }
+  .offer-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: start;
+    max-width: 1100px;
+  }
+  .offer-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 300; line-height: 1.15;
+    letter-spacing: -1px;
+  }
+  .offer-headline em { font-style: italic; color: var(--gold); }
+
+  .offer-list { list-style: none; margin-top: 40px; }
+  .offer-list li {
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    display: flex; gap: 20px; align-items: flex-start;
+    font-size: 15px; line-height: 1.7; color: #3a3832;
+  }
+  .offer-list li:last-child { border-bottom: none; }
+  .offer-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px; color: var(--gold); letter-spacing: 2px;
+    padding-top: 4px; flex-shrink: 0;
+  }
+
+  .offer-price-box {
+    margin-top: 48px;
+    border: 1px solid var(--gold);
+    padding: 40px;
+    position: relative;
+  }
+  .offer-price-box::before {
+    content: 'The Visibility Intensive';
+    position: absolute; top: -10px; left: 32px;
+    background: var(--parchment);
+    padding: 0 12px;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .price-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px; font-weight: 300; color: var(--ink);
+    line-height: 1;
+  }
+  .price-period { font-size: 14px; color: var(--mist); margin-top: 8px; }
+  .price-note { font-size: 13px; color: var(--mist); margin-top: 20px; line-height: 1.7; }
+  .price-promise {
+    margin-top: 24px; padding-top: 24px;
+    border-top: 1px solid rgba(201,168,76,0.2);
+    font-size: 13px; line-height: 1.8; color: #3a3832;
+    font-style: italic;
+  }
+
+  /* FOR WHO */
+  .forwho { background: var(--ink); color: var(--parchment); }
+  .forwho .section-label { color: var(--gold); }
+
+  .forwho-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 3.5vw, 46px);
+    font-weight: 300; line-height: 1.3;
+    max-width: 700px; margin-bottom: 72px;
+    letter-spacing: -0.5px;
+  }
+
+  .forwho-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .forwho-card {
+    background: rgba(245,240,232,0.04);
+    padding: 48px 36px;
+    border: 1px solid rgba(201,168,76,0.1);
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .forwho-card:hover {
+    background: rgba(201,168,76,0.06);
+    border-color: rgba(201,168,76,0.25);
+  }
+  .forwho-card-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px; font-weight: 300;
+    color: rgba(201,168,76,0.2);
+    line-height: 1; margin-bottom: 24px;
+  }
+  .forwho-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 400;
+    color: var(--parchment); margin-bottom: 16px;
+  }
+  .forwho-card-text {
+    font-size: 14px; line-height: 1.8;
+    color: rgba(245,240,232,0.5);
+  }
+
+  /* ABOUT */
+  .about { background: var(--cream); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 100px; align-items: center;
+    max-width: 1100px;
+  }
+  .about-visual {
+    position: relative;
+  }
+  .about-visual-box {
+    width: 100%; padding-bottom: 120%;
+    background: var(--deep);
+    position: relative; overflow: hidden;
+  }
+  .about-visual-box::after {
+    content: 'RS';
+    position: absolute; bottom: 24px; right: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px; font-weight: 300;
+    color: rgba(201,168,76,0.15);
+    line-height: 1;
+  }
+  .about-visual-line {
+    position: absolute; bottom: -24px; left: 24px;
+    right: -24px; height: 1px;
+    background: var(--gold); opacity: 0.3;
+  }
+  .about-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 300; line-height: 1.1;
+    letter-spacing: -1px; margin-bottom: 32px;
+  }
+  .about-name em { font-style: italic; color: var(--gold); }
+  .about-text {
+    font-size: 16px; line-height: 1.9;
+    color: #4a4842; margin-bottom: 24px;
+  }
+  .about-proof {
+    display: flex; gap: 48px; margin-top: 48px;
+    padding-top: 48px; border-top: 1px solid var(--gold-light);
+  }
+  .proof-item {}
+  .proof-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px; font-weight: 300; color: var(--ink);
+    line-height: 1;
+  }
+  .proof-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--mist); margin-top: 6px;
+  }
+
+  /* PROCESS */
+  .process { background: var(--parchment); }
+  .process-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 300; line-height: 1.1;
+    letter-spacing: -1px; max-width: 600px;
+    margin-bottom: 80px;
+  }
+  .process-headline em { font-style: italic; color: var(--gold); }
+
+  .process-steps {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+  }
+  .process-step {
+    padding: 48px 32px;
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    position: relative;
+  }
+  .step-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 64px; font-weight: 300;
+    color: rgba(201,168,76,0.2); line-height: 1;
+    margin-bottom: 24px;
+  }
+  .step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 400;
+    color: var(--ink); margin-bottom: 12px;
+  }
+  .step-text {
+    font-size: 13px; line-height: 1.8; color: var(--mist);
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--ink);
+    padding: 140px 48px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta-bg-circle {
+    position: absolute;
+    width: 600px; height: 600px;
+    border: 1px solid rgba(201,168,76,0.08);
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .cta-bg-circle:nth-child(2) {
+    width: 900px; height: 900px;
+    border-color: rgba(201,168,76,0.04);
+  }
+  .cta-eyebrow {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 32px; display: block;
+  }
+  .cta-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 7vw, 96px);
+    font-weight: 300; line-height: 1.0;
+    color: var(--parchment); letter-spacing: -2px;
+    max-width: 800px; margin: 0 auto 24px;
+  }
+  .cta-headline em { font-style: italic; color: var(--gold); }
+  .cta-sub {
+    font-size: 16px; color: rgba(245,240,232,0.5);
+    max-width: 480px; margin: 0 auto 56px;
+    line-height: 1.8;
+  }
+  .cta-btn {
+    display: inline-block;
+    padding: 22px 64px;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    text-decoration: none; font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.3s;
+    position: relative; z-index: 1;
+  }
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 60px rgba(201,168,76,0.25);
+  }
+  .cta-note {
+    margin-top: 28px; font-size: 12px;
+    color: rgba(245,240,232,0.3); letter-spacing: 1px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--deep);
+    padding: 48px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(245,240,232,0.4);
+  }
+  .footer-tagline {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(201,168,76,0.4);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1; transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 24px; }
+    section { padding: 80px 24px; }
+    .hero { padding: 100px 24px 80px; }
+    .section-divider { padding: 0 24px; }
+    .problem-grid, .offer-grid, .about-grid { grid-template-columns: 1fr; gap: 48px; }
+    .forwho-cards { grid-template-columns: 1fr; gap: 2px; }
+    .process-steps { grid-template-columns: 1fr 1fr; }
+    .about-visual { display: none; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .cta-section { padding: 100px 24px; }
+  }
+
+  @media (max-width: 600px) {
+    .hero-headline { font-size: 44px; }
+    .process-steps { grid-template-columns: 1fr; }
+    .hero-cta-group { flex-direction: column; align-items: flex-start; }
+    .about-proof { gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Remo Scano</div>
+  <a href="#contact" class="nav-cta">Book a Call</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-text">Visibility</div>
+  <p class="hero-eyebrow">SEO Strategy · Mindset · Presence</p>
+  <h1 class="hero-headline">
+    Get found.<br>
+    <em>Inside</em><br>
+    and out.
+  </h1>
+  <p class="hero-sub">
+    Most entrepreneurs are invisible online — not because they lack skill, but because they lack clarity. I help you fix both.
+  </p>
+  <div class="hero-cta-group">
+    <a href="#contact" class="btn-primary"><span>Book a Free Discovery Call</span></a>
+    <a href="#offer" class="btn-ghost">See how it works</a>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <span class="section-label">The Real Problem</span>
+  <div class="problem-grid">
+    <h2 class="problem-headline reveal">
+      Your website<br>
+      is <em>silent.</em><br>
+      So are you.
+    </h2>
+    <div class="problem-body reveal">
+      <p>
+        You've built something real. You have genuine expertise, a body of work, a story worth telling. And yet — when someone searches for exactly what you do, <strong>you don't appear.</strong>
+      </p>
+      <p>
+        Most people blame the algorithm. The budget. The timing. But after 10+ years working with entrepreneurs and studying how Google thinks, I've found the real reason:
+      </p>
+      <p>
+        <strong>Google can't rank what it can't understand. And it can't understand you if you don't understand yourself.</strong>
+      </p>
+      <p>
+        Vague positioning creates vague content. Vague content doesn't rank. The solution isn't technical — it's clarity.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider">
+  <div class="divider-line"></div>
+  <div class="divider-symbol">✦</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- TRUTH -->
+<section class="truth">
+  <blockquote class="truth-statement reveal">
+    "The entrepreneurs who struggle with SEO are usually the same ones who struggle with clarity. They don't know exactly what they stand for — <em>so Google doesn't either.</em>"
+  </blockquote>
+</section>
+
+<!-- OFFER -->
+<section class="offer" id="offer">
+  <span class="section-label">The Work</span>
+  <div class="offer-grid">
+    <div>
+      <h2 class="offer-headline reveal">
+        90 days.<br>
+        <em>Two</em> transformations.
+      </h2>
+      <ul class="offer-list reveal">
+        <li>
+          <span class="offer-num">01</span>
+          <span><strong>SEO Audit + Roadmap</strong> — A full diagnosis of why your site isn't ranking, and a precise organic growth strategy built around your unique positioning.</span>
+        </li>
+        <li>
+          <span class="offer-num">02</span>
+          <span><strong>Positioning Clarity</strong> — We find the one thing you stand for that Google (and your clients) can understand immediately. No more vague headlines.</span>
+        </li>
+        <li>
+          <span class="offer-num">03</span>
+          <span><strong>Monthly Mindset Sessions</strong> — One session per month dedicated to the inner work that makes the outer strategy stick.</span>
+        </li>
+        <li>
+          <span class="offer-num">04</span>
+          <span><strong>Async Support</strong> — WhatsApp access between sessions. Questions answered, decisions supported, momentum maintained.</span>
+        </li>
+        <li>
+          <span class="offer-num">05</span>
+          <span><strong>Monthly Progress Report</strong> — Real ranking data. Real movement. Nothing to interpret — just proof it's working.</span>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <div class="offer-price-box reveal">
+        <div class="price-amount">€1,500</div>
+        <div class="price-period">per month · 3-month engagement</div>
+        <p class="price-note">2 spots available per quarter.<br>Applications reviewed personally.</p>
+        <p class="price-promise">
+          "In 90 days your website ranks higher and you know exactly who you are and what you stand for — or I keep working until it does."
+        </p>
+      </div>
+      <div style="margin-top: 32px;" class="reveal">
+        <a href="#contact" class="btn-primary" style="display:inline-block"><span>Apply for a Spot</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR WHO -->
+<section class="forwho">
+  <span class="section-label">Who This Is For</span>
+  <p class="forwho-intro reveal">
+    This work is not for everyone. It's for the ones who are ready to be seen — truly seen.
+  </p>
+  <div class="forwho-cards">
+    <div class="forwho-card reveal">
+      <div class="forwho-card-num">I</div>
+      <div class="forwho-card-title">The Invisible Expert</div>
+      <p class="forwho-card-text">You're better than your competitors. You know it. Your clients know it. Google doesn't — yet. You have real expertise but your online presence doesn't reflect it.</p>
+    </div>
+    <div class="forwho-card reveal">
+      <div class="forwho-card-num">II</div>
+      <div class="forwho-card-title">The Transitioning Professional</div>
+      <p class="forwho-card-text">You're building something new — a consultancy, a coaching practice, a brand. You need both a clear identity and the visibility to make it real in the market.</p>
+    </div>
+    <div class="forwho-card reveal">
+      <div class="forwho-card-num">III</div>
+      <div class="forwho-card-title">The Conscious Entrepreneur</div>
+      <p class="forwho-card-text">You want the business to work, yes. But underneath that, you want it to mean something. You're building something aligned — and you need it to be found.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about">
+  <span class="section-label">The Guide</span>
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <div class="about-visual-box"></div>
+      <div class="about-visual-line"></div>
+    </div>
+    <div>
+      <h2 class="about-name reveal">
+        I'm Remo.<br>
+        I work at the<br>
+        <em>intersection</em><br>
+        of two worlds.
+      </h2>
+      <p class="about-text reveal">
+        For over a decade, I've moved between disciplines that most people keep separate — SEO strategy, mindset coaching, classical Indian music, creative branding, and the study of presence and perception.
+      </p>
+      <p class="about-text reveal">
+        What I've discovered is that these aren't separate fields. They're all asking the same question: <em>how do you become unmistakably yourself?</em>
+      </p>
+      <p class="about-text reveal">
+        My website remoscano.it ranks on page one in Italy for Indian classical music — a niche with no paid advertising, built entirely through organic authority. That's not a coincidence. That's the method. And it works for your business too.
+      </p>
+      <div class="about-proof reveal">
+        <div class="proof-item">
+          <div class="proof-number">10+</div>
+          <div class="proof-label">Years of practice</div>
+        </div>
+        <div class="proof-item">
+          <div class="proof-number">4</div>
+          <div class="proof-label">Disciplines integrated</div>
+        </div>
+        <div class="proof-item">
+          <div class="proof-number">P.1</div>
+          <div class="proof-label">Google ranking, organic</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <span class="section-label">How It Works</span>
+  <h2 class="process-headline reveal">
+    A clear path.<br>
+    <em>No noise.</em>
+  </h2>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <div class="step-number">01</div>
+      <div class="step-title">Discovery Call</div>
+      <p class="step-text">30 minutes. I ask the questions no one else asks. We find the gap between where you are and where you should be online.</p>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-number">02</div>
+      <div class="step-title">Clarity Session</div>
+      <p class="step-text">We define your positioning in one precise sentence. This becomes the foundation everything else is built on.</p>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-number">03</div>
+      <div class="step-title">SEO Roadmap</div>
+      <p class="step-text">A custom organic strategy built around your unique positioning. Keywords, content, authority — all aligned with who you actually are.</p>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-number">04</div>
+      <div class="step-title">90-Day Execution</div>
+      <p class="step-text">We implement, track, adjust. Monthly sessions, async support, real data. You focus on your work. We make sure it gets found.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-bg-circle"></div>
+  <div class="cta-bg-circle"></div>
+  <span class="cta-eyebrow">2 spots open this quarter</span>
+  <h2 class="cta-headline reveal">
+    Ready to be<br>
+    <em>found?</em>
+  </h2>
+  <p class="cta-sub reveal">
+    A 30-minute conversation. No pitch, no pressure. Just an honest look at where you are and whether I can help.
+  </p>
+  <a href="https://cal.com/remoscano" class="cta-btn reveal">Book Your Discovery Call</a>
+  <p class="cta-note reveal">Free · 30 minutes · No obligation</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Remo Scano</div>
+  <div class="footer-tagline">Get Found. Inside and Out.</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+      ring.style.width = '60px';
+      ring.style.height = '60px';
+      ring.style.opacity = '0.25';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+      ring.style.opacity = '0.5';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
